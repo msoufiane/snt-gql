@@ -19,7 +19,7 @@ export class IsEmailAlreadyExistConstraint
 }
 
 export function IsEmailAlreadyExist(validationOptions?: ValidationOptions) {
-	return (object: object, propertyName: string) => {
+	return (object: Object, propertyName: string) => {
 		registerDecorator({
 			target: object.constructor,
 			propertyName,
