@@ -13,7 +13,7 @@ jobs:
       before_script:
         - yarn install
         - docker run --name snt-test-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -d postgres
-        - docker exec -t snt-test-db psql -U postgres -c "CREATE DATABASE snt-test-db;"
+        - docker exec -t snt-test-db sudo -u postgres psql -c "CREATE DATABASE snt-test-db;"
       script: yarn test --coverage
     - stage: Build
       name: Compiling TypeScript
