@@ -8,7 +8,7 @@ export const testConn = (drop: boolean = false) => {
 		port: 5432,
 		username: 'postgres',
 		password: 'postgres',
-		database: 'snt-test-db',
+		database: 'postgres',
 		synchronize: drop,
 		dropSchema: drop,
 		entities: [__dirname + '../entity/*.*'],
