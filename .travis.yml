@@ -11,8 +11,7 @@ jobs:
     - stage: Tests
       name: Unit Tests
       before_script:
-        - docker run --name snt-test-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres
-          -d postgres
+        - docker run --name snt-test-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -d postgres
         - docker run --name snt-redis-session -d redis
       script: yarn test --coverage
     - stage: Build
