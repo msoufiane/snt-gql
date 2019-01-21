@@ -1,6 +1,6 @@
 {
 	"name": "snt-gql",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"main": "index.js",
 	"repository": "https://github.com/msoufiane/snt-gql.git",
 	"author": "Soufiane Mghanen <mgh.soufiane@gmail.com>",
