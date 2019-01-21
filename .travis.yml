@@ -12,6 +12,7 @@ jobs:
       name: Unit Tests
       before_script:
         - yarn install
+        - docker run --name snt-test-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=snt-test-db -d postgres
       script: yarn test --coverage
     - stage: Build
       name: Compiling TypeScript
