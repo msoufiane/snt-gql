@@ -8,8 +8,7 @@ import {
 import { User } from '../../../entity/User';
 
 @ValidatorConstraint({ async: true })
-export class IsEmailAlreadyExistConstraint
-	implements ValidatorConstraintInterface {
+class IsEmailAlreadyExistConstraint implements ValidatorConstraintInterface {
 	public validate(email: string) {
 		return User.findOne({ where: { email } }).then(user => {
 			if (user) return false;
@@ -18,8 +17,8 @@ export class IsEmailAlreadyExistConstraint
 	}
 }
 
-export function IsEmailAlreadyExist(validationOptions?: ValidationOptions) {
-	return (object: Object, propertyName: string) => {
+export default (validationOptions?: ValidationOptions) => {
+	return (object: object, propertyName: string) => {
 		registerDecorator({
 			target: object.constructor,
 			propertyName,
@@ -28,4 +27,4 @@ export function IsEmailAlreadyExist(validationOptions?: ValidationOptions) {
 			validator: IsEmailAlreadyExistConstraint,
 		});
 	};
-}
+};
