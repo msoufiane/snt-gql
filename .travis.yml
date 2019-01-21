@@ -31,4 +31,5 @@ jobs:
         - docker tag snt-gql eu.gcr.io/sentad-221009/snt-gql
         - bash -c "docker tag snt-gql eu.gcr.io/sentad-221009/snt-gql:$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g'| tr -d '[[:space:]]')"
         - docker push eu.gcr.io/sentad-221009/snt-gql
-        - bash -c "docker push eu.gcr.io/sentad-221009/snt-gql:$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g'| tr -d '[[:space:]]')"
+        - export SNT_VERSION="$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g'| tr -d '[[:space:]]')"
+        # - bash -c "docker push eu.gcr.io/sentad-221009/snt-gql:$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g'| tr -d '[[:space:]]')"
