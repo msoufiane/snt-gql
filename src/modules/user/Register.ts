@@ -7,16 +7,16 @@ import { RegisterInput } from './register/RegisterInput';
 @Resolver()
 export class RegisterResolver {
 	@Query(() => String)
-	async hello() {
-		return 'Hello';
+	public async hello() {
+		return 'Hello World!';
 	}
 
 	@Mutation(() => User)
-	async register(@Arg('data')
+	public async register(@Arg('data')
 	{
+		email,
 		firstName,
 		lastName,
-		email,
 		password,
 	}: RegisterInput): Promise<User> {
 		const hashedPassword = await bcrypt.hash(password, 12);

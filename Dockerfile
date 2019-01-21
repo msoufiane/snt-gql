@@ -10,8 +10,8 @@ RUN npm install yarn -g
 
 RUN yarn install
 
-COPY --chown=node:node . .
+COPY --chown=node:node dist/ .
 USER node
 EXPOSE 8080
 
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "index.js" ]

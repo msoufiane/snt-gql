@@ -1,22 +1,19 @@
 import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-express';
 import Express from 'express';
-import { buildSchema, formatArgumentValidationError } from 'type-graphql';
+import { formatArgumentValidationError } from 'type-graphql';
 import { createConnection } from 'typeorm';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
 
-import { RegisterResolver } from './modules/user/Register';
-import { LoginResolver } from './modules/user/Login';
 import { redis } from './redis';
+import { createSchema } from './utils/createSchema';
 
 const main = async () => {
 	await createConnection();
 
-	const schema = await buildSchema({
-		resolvers: [RegisterResolver, LoginResolver],
-	});
+	const schema = await createSchema();
 
 	const apolloServer = new ApolloServer({
 		schema,
@@ -55,7 +52,7 @@ const main = async () => {
 	apolloServer.applyMiddleware({ app });
 
 	app.listen(4000, () => {
-		console.log('server started on http://localhost:4000/graphql');
+		// console.log('server started on http://localhost:4000/graphql');
 	});
 };
 

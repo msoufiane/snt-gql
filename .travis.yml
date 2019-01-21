@@ -6,21 +6,13 @@ cache:
     - node_modules
 notifications:
   email: false
-branches:
-  only:
-    - master
 jobs:
   include:
-    - stage: Tests & Deployment
+    - stage: Tests
       name: Unit Tests
       before_script:
-        - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-        - chmod +x ./kubectl
-        - sudo mv ./kubectl /usr/local/bin/kubectl
-        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        - chmod +x ./cc-test-reporter
-        - ./cc-test-reporter before-build
-      script:
-        - yarn test --coverage
-      after_script:
-        - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+        - yarn install
+      script: yarn test --coverage
+    - stage: Build
+      name: Compiling TypeScript
+      script: yarn build
