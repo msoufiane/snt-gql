@@ -16,4 +16,7 @@ jobs:
       script: yarn test --coverage
     - stage: Build
       name: Compiling TypeScript
-      script: yarn build
+      before_script:
+        - yarn build
+      script:
+        - docker build -t snt-gql .
