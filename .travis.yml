@@ -1,33 +1,50 @@
 language: node_js
 node_js:
-  - stable
+- stable
 cache:
   directories:
-    - node_modules
+  - node_modules
   yarn: true
 notifications:
   email: false
+env:
+  global:
+    secure: Oq439NNIvFfqzXSX90FJJ77lX6JR+AIAm8+419MddpU1eQh+Fx+BLZMmE7ag/jO95kelers5U7pC3uOQF5BTgYzVbyXQ0W+mX+v/jlTpE45vz9dzXywFkVeZfw6BECMuAHqPvzH+zCrx5A2g9h3f98ivhYr+hN63Nxe7Oe2l0kfMmkJuDsUK2jKcFjBrVYIyUGxHWnSmWANxhTziIgAQ5pal+pMuQX4F+Uzi+wZMLUXmkOW9qcatQKMBFtHYAlK4tbMc0bnPWHpFychrIqCDz0tmYOaJQuVARANIPcfpN8X+riZM0nZzXTXsHM2NBQ8TdKl7gOxo+Xdy4Jj5z7rCR0SPLAQjufCXGUUrPNo/M9Vq2/2OOrhjtqgMKtLHL1o3bMjySUtDhqBox5ATmKiYF0AiFYJwAHmW8bMmZGnw7gkZxH1yM497/HYqdsqO2TwGhFIBb3swS1Rh3614Xt9jfTRiU6jCUYVpAmrb4qlcC9S5qDshuPVlI+wWGGQ5VjwTsAmDeF9CDE3jD1Dd2wJbRSoHrLKo99B8yu/jTL261SLkdZik6uQU0YaBUzh/XwovJLwG3XhrCI2EuiMCu7MoMu60fNe6H7k7+JsCyNSD9nDpRsrqp6pry3ErFca1nth3u0FeiIkYK3rh5wuwByjNZ27ZE3RnlyTu1ba8ps6naRo=
 jobs:
   include:
-    - stage: Tests
-      name: Unit Tests
-      before_script:
-        - docker run --name snt-test-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -d postgres
-        - docker run --name snt-redis-session -d redis
-      script: yarn test --coverage
-    - stage: Build
-      name: Compiling TypeScript
-      before_script:
-        - gcloud version || true
-        # - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
-        # - source /home/travis/google-cloud-sdk/path.bash.inc
-        - openssl aes-256-cbc -K $encrypted_752465ee0773_key -iv $encrypted_752465ee0773_iv -in travis.json.enc -out ./gcloud.json -d
-        - gcloud auth activate-service-account --key-file ./gcloud.json
-        - gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
-        - yarn build
-      script:
-        - docker build -t eu.gcr.io/sentad-221009/snt-gql .
-      after_script:
-        - docker tag eu.gcr.io/sentad-221009/snt-gql:latest eu.gcr.io/sentad-221009/snt-gql:$(cat package.json | grep version | head -1 | sed 's/[version:,]//g' | sed 's/[",]//g' | tr -d '[[:space:]]')
-        - docker push eu.gcr.io/sentad-221009/snt-gql
-        - docker push eu.gcr.io/sentad-221009/snt-gql:$(cat package.json | grep version | head -1 | sed 's/[version:,]//g' | sed 's/[",]//g' | tr -d '[[:space:]]')
+  - stage: Tests
+    name: Unit Tests
+    before_script:
+    - docker run --name snt-test-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres
+      -d postgres
+    - docker run --name snt-redis-session -d redis
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+      > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
+    script: yarn test --coverage
+    after_script:
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - stage: Build
+    name: Compiling TypeScript
+    before_script:
+    - gcloud version || true
+    - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk;
+      export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com |
+      bash; fi
+    - source $HOME/google-cloud-sdk/path.bash.inc
+    - openssl aes-256-cbc -K $encrypted_752465ee0773_key -iv $encrypted_752465ee0773_iv
+      -in travis.json.enc -out ./gcloud.json -d
+    - gcloud auth activate-service-account --key-file ./gcloud.json
+    - gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin
+      https://eu.gcr.io
+    - yarn build
+    script:
+    - docker build -t eu.gcr.io/sentad-221009/snt-gql .
+    - docker tag eu.gcr.io/sentad-221009/snt-gql:latest eu.gcr.io/sentad-221009/snt-gql:$(cat
+      package.json | grep version | head -1 | sed 's/[version:,]//g' | sed 's/[",]//g'
+      | tr -d '[[:space:]]')
+    after_script:
+    - docker push eu.gcr.io/sentad-221009/snt-gql
+    - docker push eu.gcr.io/sentad-221009/snt-gql:$(cat package.json | grep version
+      | head -1 | sed 's/[version:,]//g' | sed 's/[",]//g' | tr -d '[[:space:]]')
