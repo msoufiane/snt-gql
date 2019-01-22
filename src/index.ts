@@ -12,19 +12,14 @@ import { createSchema } from './utils/createSchema';
 
 const main = async () => {
 	await createConnection();
-
-	const schema = await createSchema();
-
 	const apolloServer = new ApolloServer({
-		schema,
+		schema: await createSchema(),
 		formatError: formatArgumentValidationError,
 		context: ({ req }: any) => ({ req }),
 	});
 
 	const app = Express();
-
 	const RedisStore = connectRedis(session);
-
 	app.use(
 		cors({
 			credentials: true,
@@ -50,10 +45,7 @@ const main = async () => {
 	);
 
 	apolloServer.applyMiddleware({ app });
-
-	app.listen(4000, () => {
-		// console.log('server started on http://localhost:4000/graphql');
-	});
+	app.listen(4000);
 };
 
 main();
