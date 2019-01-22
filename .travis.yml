@@ -18,8 +18,7 @@ jobs:
     - docker run --name snt-test-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres
       -d postgres
     - docker run --name snt-redis-session -d redis
-    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-      > ./cc-test-reporter
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
     - ./cc-test-reporter before-build
     script: yarn test --coverage
@@ -28,11 +27,9 @@ jobs:
   - stage: Build
     name: Compiling TypeScript
     before_script:
-    - gcloud version || true
-    - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk;
-      export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com |
-      bash; fi
-    - source $HOME/google-cloud-sdk/path.bash.inc
+    # - gcloud version || true
+    # - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
+    # - source $HOME/google-cloud-sdk/path.bash.inc
     - openssl aes-256-cbc -K $encrypted_752465ee0773_key -iv $encrypted_752465ee0773_iv
       -in travis.json.enc -out ./gcloud.json -d
     - gcloud auth activate-service-account --key-file ./gcloud.json
@@ -42,9 +39,7 @@ jobs:
     script:
     - docker build -t eu.gcr.io/sentad-221009/snt-gql .
     - docker tag eu.gcr.io/sentad-221009/snt-gql:latest eu.gcr.io/sentad-221009/snt-gql:$(cat
-      package.json | grep version | head -1 | sed 's/[version:,]//g' | sed 's/[",]//g'
-      | tr -d '[[:space:]]')
+      package.json | grep version | head -1 | sed 's/[version:,]//g' | sed 's/[",]//g' | tr -d '[[:space:]]')
     after_script:
     - docker push eu.gcr.io/sentad-221009/snt-gql
-    - docker push eu.gcr.io/sentad-221009/snt-gql:$(cat package.json | grep version
-      | head -1 | sed 's/[version:,]//g' | sed 's/[",]//g' | tr -d '[[:space:]]')
+    - docker push eu.gcr.io/sentad-221009/snt-gql:$(cat package.json | grep version | head -1 | sed 's/[version:,]//g' | sed 's/[",]//g' | tr -d '[[:space:]]')
